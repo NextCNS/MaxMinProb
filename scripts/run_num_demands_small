@@ -1,0 +1,29 @@
+#!/bin/csh
+cd ..
+set case_dir = "./cases/num_demands/small_scale"	# modify this directory
+set nodes = 30
+foreach alg (ilp)
+	cp -f $case_dir/{$alg}.py ./run.py
+	sed -i "/nov =/s/num_nodes/$nodes/" run.py
+	rm -f agg_result_m.txt agg_result_j.txt agg_result_ttk.txt
+	foreach num_demands (3 4 5 6 7 8)
+		cp -f $case_dir/Sample_{$nodes}_nodes_{$num_demands}_demands.txt ./Sample.txt
+		rm -f result_m.txt result_j.txt result_ttk.txt
+		foreach line ("`cat Sample.txt`")
+			./run.py $line
+		end
+		set avr = `./agg.py result_m.txt`
+		echo "$num_demands $avr" >> agg_result_m.txt
+		set avr = `./agg.py result_j.txt`
+		echo "$num_demands $avr" >> agg_result_j.txt
+		set avr = `./agg.py result_ttk.txt`
+		echo "$num_demands $avr" >> agg_result_ttk.txt
+		mv -f result_m.txt $case_dir/result_m_{$alg}_{$num_demands}.txt
+		mv -f result_j.txt $case_dir/result_j_{$alg}_{$num_demands}.txt
+		mv -f result_ttk.txt $case_dir/result_ttk_{$alg}_{$num_demands}.txt
+	end
+	mv -f agg_result_m.txt $case_dir/agg_result_m_{$alg}.txt
+	mv -f agg_result_j.txt $case_dir/agg_result_j_{$alg}.txt
+	mv -f agg_result_ttk.txt $case_dir/agg_result_ttk_{$alg}.txt
+end
+#EOF

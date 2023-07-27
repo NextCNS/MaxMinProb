@@ -1,0 +1,7 @@
+- network genneration: randomly using Erdos-Renyi method
+- #node: 100
+- probability of generating edges: 0.05
+- #demand: 20
+- consumption rate: 1 key/slot
+- the number of remaining time slots is generated according to the normal distribution with the average: 10
+- the deviation of the distribution: 5

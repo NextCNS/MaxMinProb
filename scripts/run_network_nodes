@@ -1,0 +1,29 @@
+#!/bin/csh
+cd ..
+set case_dir = "./cases/network/num_nodes"
+
+foreach alg (lpr lpr_ra pro_serving)
+	cp -f ${case_dir}/{$alg}.py ./run.py 
+	rm -f agg_result_m.txt agg_result_j.txt agg_result_ttk.txt
+	foreach num_nodes (50 100 150 200 250 300)
+		set sample = "{$case_dir}/Sample_{$num_nodes}_nodes_20_demands.txt"
+		cp -f $sample ./Sample.txt
+		rm -f result_m.txt result_j.txt result_ttk.txt
+		foreach line ("`cat Sample.txt`")
+			./run.py $line $num_nodes
+		end
+		set avr = `./agg.py result_m.txt`
+		echo "$num_nodes $avr" >> agg_result_m.txt
+		set avr = `./agg.py result_j.txt`
+		echo "$num_nodes $avr" >> agg_result_j.txt
+		set avr = `./agg.py result_ttk.txt`
+		echo "$num_nodes $avr" >> agg_result_ttk.txt
+		mv -f result_m.txt $case_dir/result_m_{$alg}_{$num_nodes}.txt
+		mv -f result_j.txt $case_dir/result_j_{$alg}_{$num_nodes}.txt
+		mv -f result_ttk.txt $case_dir/result_ttk_{$alg}_{$num_nodes}.txt
+	end
+	mv -f agg_result_m.txt $case_dir/agg_result_m_{$alg}.txt
+	mv -f agg_result_j.txt $case_dir/agg_result_j_{$alg}.txt
+	mv -f agg_result_ttk.txt $case_dir/agg_result_ttk_{$alg}.txt
+end
+#EOF

@@ -1,0 +1,29 @@
+#!/usr/bin/csh
+set folder = length_length_loss_init_0
+if (! -d ./$folder) then
+	mkdir ./$folder
+endif
+set case_dir = "./$folder"
+foreach loss (0.1 0.2 0.3 0.4)
+	set f_result = "loss_length_{$loss}.txt"
+	if (-e $f_result) then
+		rm -f $f_result
+	endif
+	foreach length (20 30 40 50 60 70)
+		if (-e result.txt) then
+			rm -f result.txt
+		endif
+		@ cnt = 0
+		while ($cnt < 100)
+			# the syntax of python file: run_BB84_loss.py length loss_init loss_length
+			# set loss_init = 0
+			python3 run_BB84_loss.py $length 0 $loss
+			@ cnt++
+		end
+		set result = `python3 agg.py result.txt`
+		echo "$length $result" >> $f_result
+		mv -f result.txt $case_dir/loss_{$loss}_length_{$length}.txt
+	end
+	mv -f $f_result $case_dir
+end
+#EOF
